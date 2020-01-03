@@ -1,7 +1,23 @@
-from PyQt5.QtWidgets import QWidget, QApplication
+from PyQt5.QtWidgets import QWidget, QApplication, QMessageBox
 import sys
 from design import Ui_Form as Design
 from PyQt5.QtCore import QTimer
+
+
+class DialogGenerator:
+    def __init__(self, text, title, types='critical'):
+        self.box = QMessageBox()
+        if types == 'critical':  # Условие в зависимости от переанного типа сообщения
+            self.box.setIcon(QMessageBox.Critical)  # меняющее отображаемуюю иконку
+        elif types == 'information':
+            self.box.setIcon(QMessageBox.Information)
+        elif types == 'text':
+            pass
+        self.box.setText(text)
+        self.box.setWindowTitle(title)
+
+    def get_class(self):  # функция возвращает класс созданного объекта
+        return self.box
 
 
 class Widget(QWidget, Design):
@@ -25,6 +41,7 @@ class Widget(QWidget, Design):
         self.pushButton_15.clicked.connect(self.p15)
         self.pushButton_16.clicked.connect(self.p16)
         self.pushButton_17.clicked.connect(self.p17)
+        self.pushButton_18.clicked.connect(self.p18)
         self.prt = ''
         self.timer = QTimer()
         self.timer.timeout.connect(self.updater)
@@ -76,7 +93,8 @@ class Widget(QWidget, Design):
         try:
             self.prt = str(eval(self.prt))
         except:
-            pass
+            self.ex = DialogGenerator("Error", "Error", "critical").get_class()
+            self.ex.show()
 
     def p16(self):
         try:
@@ -92,6 +110,16 @@ class Widget(QWidget, Design):
                 self.prt = str(self.prt)[:-1]
             else:
                 self.prt = str(self.prt) + '-'
+
+    def p18(self):
+        if len(self.prt) == 0:
+            self.ex = DialogGenerator("Error", "Error", "critical").get_class()
+            self.ex.show()
+        elif not self.prt[-1].isdigit():
+            self.ex = DialogGenerator("Error", "Error", "critical").get_class()
+            self.ex.show()
+        else:
+            self.prt = str(self.prt) + '.'
 
     def updater(self):
         self.label.setText(str(self.prt))
